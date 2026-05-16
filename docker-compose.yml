@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=mongodb://mongo_db:27017/cengel_db
+      - JWT_SECRET=super_secret_cengel_key
+    depends_on:
+      - mongo_db
+
+  mongo_db:
+    image: mongo:latest
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongodata:/data/db
+
+volumes:
+  mongodata:
