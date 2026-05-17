@@ -27,6 +27,20 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
+app.get('/', (req, res) => {
+  const state = mongoose.connection.readyState;
+  const states = {
+    0: 'disconnected',
+    1: 'connected',
+    2: 'connecting',
+    3: 'disconnecting'
+  };
+  res.json({
+    status: 'ok',
+    dbState: states[state] || state
+  });
+});
+
 app.post('/register', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -55,7 +69,7 @@ app.post('/register', async (req, res) => {
     res.status(201).json({ user: { id: newUser._id, username: newUser.username }, token });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Sunucu hatası.' });
+    res.status(500).json({ error: 'Sunucu hatası.', details: err.message });
   }
 });
 
@@ -82,7 +96,7 @@ app.post('/login', async (req, res) => {
     res.json({ user: { id: user._id, username: user.username }, token });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Sunucu hatası.' });
+    res.status(500).json({ error: 'Sunucu hatası.', details: err.message });
   }
 });
 
