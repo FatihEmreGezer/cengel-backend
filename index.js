@@ -14,9 +14,14 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/cengel_db'
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_cengel_key';
 
 // Connect to MongoDB
-mongoose.connect(MONGO_URI)
+mongoose.connect(MONGO_URI, {
+  serverSelectionTimeoutMS: 5000 // Keep trying to send operations for 5 seconds
+})
   .then(() => console.log('MongoDB connected successfully.'))
-  .catch(err => console.error('MongoDB connection error:', err));
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1); // Exit process on failure so Render automatically restarts it
+  });
 
 // Define User Schema and Model
 const userSchema = new mongoose.Schema({
